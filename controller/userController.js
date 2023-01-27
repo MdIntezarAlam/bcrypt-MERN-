@@ -12,6 +12,9 @@ export const postApi = async (req, res) => {
                 user
             })
         }
+        //  genetae Token while register //same on eline code ko paste kar de .compare ke nich in login
+        const token = await user.generateToken()
+        console.log("token while register", token)
 
         await user.save()
     } catch (error) {
@@ -31,8 +34,9 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email: email })
 
         //compare with register password and email
-
         const isMatch = bcrypt.compare(password, user.password)
+        const token = await user.generateToken()
+        console.log("token while login", token)        //generate while login 
 
         if (isMatch) {
             return res.status(201).json({
