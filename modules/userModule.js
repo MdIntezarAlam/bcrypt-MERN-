@@ -47,7 +47,7 @@ const compSchema = new mongoose.Schema({
 compSchema.methods.generateToken = async function () {
     try {
         //generte toke //sign method takes unique identifier like_id...
-        const token = await jwt.sign({ _id: this._id.toString() }, "yahaapartoekemfgnd sf  rahtah ajhi")
+        const token = await jwt.sign({ _id: this._id.toString() }, process.env.SECRETE_KEY)
         this.tokens = this.tokens.concat({ token: token })
         await this.save()
         // console.log(token)

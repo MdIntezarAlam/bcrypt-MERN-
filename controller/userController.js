@@ -4,19 +4,31 @@ import bcrypt from 'bcrypt'
 
 export const postApi = async (req, res) => {
     try {
-        const user = await User(req.body)
+        const { name, email, password } = req.body
+        let user = await User.findOne({ name })
         if (user) {
-            res.status(200).json({
-                success: true,
-                message: "user added successfully",
-                user
+            return res.status(400).json({
+                success: false,
+                message: "user Already Exists"
             })
         }
+
+        user = await User.create({ name, email, password })
         //  genetae Token while register //same on eline code ko paste kar de .compare ke nich in login
         const token = await user.generateToken()
-        console.log("token while register", token)
+        // console.log("token while register", token)
 
-        await user.save()
+        //set data in to cookies
+        const cookieOption = {
+            expires: new Date(Date.now() + 5000),
+            httpOnly: true
+        }
+        res.status(200).cookie("jwt", token, cookieOption).json({
+            success: true,
+            message: "registered user",
+            user,
+            token
+        })
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -29,19 +41,30 @@ export const postApi = async (req, res) => {
 export const loginUser = async (req, res) => {
     try {
         //find email and pass to loginF
-        const email = req.body.email
-        const password = req.body.password
-        const user = await User.findOne({ email: email })
+        const { email, password } = req.body
+        let user = await User.findOne({ email })
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "user not found"
+            })
+        }
 
         //compare with register password and email
         const isMatch = bcrypt.compare(password, user.password)
+        //generate token while login 
         const token = await user.generateToken()
-        console.log("token while login", token)        //generate while login 
+        // console.log("token while login", token)
+        const cookieOption = {
+            expires: new Date(Date.now() + 80 * 44 * 60 * 60 * 1000),
+            httpOnly: true
+        }
 
         if (isMatch) {
-            return res.status(201).json({
+            return res.cookie("jwt", token, cookieOption).status(201).json({
                 success: true,
-                message: "login successfully"
+                message: "login successfully",
+                token
             })
         }
         else {
