@@ -1,4 +1,5 @@
 import express from 'express'
+import { commentOnpost } from '../controller/postModule.js'
 import { loginUser, postApi } from '../controller/userController.js'
 import isAuthenticated from '../middleware/isAuthenticated.js'
 
@@ -12,5 +13,8 @@ router
 router
     .route("/login")
     .post(loginUser)
+router
+    .route("/comment/:id")
+    .post(isAuthenticated,commentOnpost)
 
 export default router

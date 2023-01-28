@@ -21,6 +21,12 @@ const compSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    commnet: {
+        type: String,
+    },
+    likes: {
+        type: String,
+    },
     //token define karna jaruri hai same
     tokens: [{
         token: {
