@@ -42,8 +42,8 @@ export const loginUser = async (req, res) => {
     try {
         //find email and pass to loginF
         const { email, password } = req.body
-        let user = await User.findOne({ email })
-        if (!email) {
+        let user = await User.findOne({ email,password })
+        if (!user) {
             return res.status(400).json({
                 success: false,
                 message: "user not found"
